@@ -6,4 +6,4 @@ Since it is a good hobby to keep my brain in a good shape.
 
 Here you can find some my solutions of problems from Open Kattis platform.
 
-This project is licensed under the terms of the MIT license.
+[This project is licensed under the terms of the MIT license.]
