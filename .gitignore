@@ -2,6 +2,7 @@
 *.user
 Debug/
 Release/
+Properties/
 x64/
 x86/
 bin/
