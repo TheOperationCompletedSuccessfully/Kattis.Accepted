@@ -1,0 +1,13 @@
+*.suo
+*.user
+Debug/
+Release/
+x64/
+x86/
+bin/
+obj/
+.vs/
+*.DotSettings.user
+*.nupkg
+*.nuget.props
+*.nuget.targets
