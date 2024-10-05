@@ -1,0 +1,5 @@
+readUInt(Number):-readUInt(-1,Number).
+readUInt(-1,R):-!,get0(Ch),(Ch <48,!,readUInt(-1,R);I1 is Ch-48,readUInt(I1,R)).
+readUInt(I,R):-get0(Ch),(Ch <48,!,R is I;I1 is I*10+Ch-48,readUInt(I1,R)).
+
+main:-readUInt(A),readUInt(B),Max is max(A,B),Min is min(A,B),(Max is 0,!,format('~2f', [125]),write(' '),format('~2f~n', [125]);Min > 0,!,Result is (250*(125-Min))/Max,(A>B,!,format('~2f', [0]),write(' '),format('~2f~n', [Result]);format('~2f', [Result]),write(' '),format('~2f~n', [0]));Max is 125,!,(A>B,!,format('~2f', [0]),write(' '),format('~2f~n', [250]);format('~2f', [250]),write(' '),format('~2f~n', [0]));Max<125,!,X is (250*125/(250-Max)),Y is 250-X,(A>B,!,format('~2f', [Y]),write(' '),format('~2f~n', [X]);format('~2f', [X]),write(' '),format('~2f~n', [Y]));Y is 250*125/Max,(A>B,!,format('~2f', [0]),write(' '),format('~2f~n', [Y]);format('~2f', [Y]),write(' '),format('~2f~n', [0]))).

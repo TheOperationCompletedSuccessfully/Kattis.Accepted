@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.33328.57
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Downtime", "Downtime.csproj", "{20B2217C-1C58-4AC6-AF50-0F3CE11FEF0D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{20B2217C-1C58-4AC6-AF50-0F3CE11FEF0D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{20B2217C-1C58-4AC6-AF50-0F3CE11FEF0D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{20B2217C-1C58-4AC6-AF50-0F3CE11FEF0D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{20B2217C-1C58-4AC6-AF50-0F3CE11FEF0D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0E747A6C-4B39-4B89-B538-24DD914D5EE3}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,11 @@
+2 12
+a
+a
+a
+a
+r 4
+r 1
+r 2
+r 3
+a
+(should be 1, but gets 4)

@@ -1,0 +1,1 @@
+main:-get0(Ch),get0(Ch2),char_code(C,Ch),char_code(C2,Ch2),write(C2),write(C).

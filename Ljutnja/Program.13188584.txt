@@ -1,0 +1,96 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Zeva;
+
+
+
+namespace Ljutnja
+{
+   class Program
+   {
+      static void Main(string[] args)
+      {
+         using (var scanner = new ZevaScanner())
+         {
+            scanner.Initialize(2 ^ 21, 2 ^ 7);
+
+            var m = scanner.NextUInt();
+            var n = scanner.NextUInt();
+            var data = new Dictionary<int, int> { {0,0 } };
+            long sum = 0;
+            for(int i=0;i<n;i++)
+            {
+               var next = scanner.NextUInt(true);
+               if(data.ContainsKey(next))
+               {
+                  data[next]++;
+               }
+               else
+               {
+                  data.Add(next, 1);
+               }
+               sum += next;
+            }
+
+            var orderedKeys = data.Keys.OrderBy(j => j).ToArray();
+            var toReach = sum - m;
+            long currentSum = 0;
+            int lastUsed = 0;
+            var toCalcLater = new Dictionary<int, int>();
+            var allItems = n;
+            for(int i=0;i<orderedKeys.Length && currentSum<toReach;i++)
+            {
+               var toM = allItems;
+               var toRemove = lastUsed == 0 ? 0 : orderedKeys[lastUsed];
+               currentSum += toM * (orderedKeys[i]- toRemove);
+               allItems -= data[orderedKeys[i]];
+               toCalcLater.Add(orderedKeys[i], toM);
+               if(lastUsed>0)
+               {
+                  toCalcLater[orderedKeys[i - 1]] = data[orderedKeys[i-1]];
+               }
+               lastUsed = i;
+            }
+
+            if(currentSum>toReach)
+            {
+               var toRemove = (int)(currentSum - toReach);
+               if (toCalcLater[orderedKeys[lastUsed]] >= toRemove)
+               {
+                  toCalcLater[orderedKeys[lastUsed]] -= (int)(currentSum - toReach);
+                  if (!toCalcLater.ContainsKey(orderedKeys[lastUsed] - 1))
+                  {
+                     toCalcLater.Add(orderedKeys[lastUsed] - 1, (int)(currentSum - toReach));
+                  }
+               }
+               else
+               {
+                  toCalcLater.Remove(orderedKeys[lastUsed]);
+                  var toLower = Math.DivRem(toRemove, allItems + data[orderedKeys[lastUsed]], out int rem);
+                  if(rem==0)
+                  {
+                     toCalcLater.Add(orderedKeys[lastUsed] - toLower, allItems + data[orderedKeys[lastUsed]]);
+                  }
+                  else
+                  {
+                     toCalcLater.Add(orderedKeys[lastUsed] - toLower, allItems+ data[orderedKeys[lastUsed]] - rem);
+                     toCalcLater.Add(orderedKeys[lastUsed] - toLower-1, rem);
+                  }
+
+               }
+            }
+
+            long result = 0;
+            foreach(var kvp in toCalcLater)
+            {
+               result += kvp.Key * kvp.Key * kvp.Value;
+            }
+
+            scanner.streamWriter.WriteLine(result);
+            scanner.streamWriter.Flush();
+         }
+         //Console.ReadKey();
+      }
+   }
+}

@@ -1,0 +1,151 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Zeva;
+
+namespace BiasedStandings
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            using (var scanner = new ZevaScanner(2 ^ 21, 2 ^ 8))
+            {
+                var caseNumber = scanner.NextUInt();
+
+
+                for (int c = 0; c < caseNumber; c++)
+                {
+                    var n = scanner.NextUInt(true);
+                    
+                        //counting sort
+                        //var random = new Random(DateTime.Now.Millisecond);
+                        //var buckets = Enumerable.Range(1, 1000).ToHashSet();
+                        //var dataHash = new Dictionary<int,int>();
+                        //var item = scanner.NextUInt(true);//random.Next(1, 1000);
+
+
+                        var dataDic = new Dictionary<int, int>();
+                        scanner.NextUInt(true);
+                        var item = scanner.NextUInt();
+                        dataDic.Add(item, 1);
+                        var min = item;
+                        var max = item;
+                        //buckets.Remove(item / 100);
+                        for (int i = 1; i < n; i++)
+                        {
+                            scanner.NextUInt(true);
+                            var newItem = scanner.NextUInt();
+                            if (dataDic.ContainsKey(newItem))
+                            {
+                                dataDic[newItem]++;
+                            }
+                            else
+                            {
+                                dataDic.Add(newItem, 1);
+                                max = Math.Max(max, newItem);
+                                min = Math.Min(min, newItem);
+                                //buckets.Remove(item / 100);
+                            }
+                        }
+
+                        
+                            var sum = 0;
+                            dataDic.TryGetValue(min, out int previousItem);
+                            int index = 1;
+                            var resultSum = 0;
+                            while (dataDic[min] > 0)
+                            {
+                                resultSum += Math.Abs(min - index);
+                                index++;
+                                dataDic[min]--;
+                            }
+
+
+                            for (int i = min + 1; i < max; i++)
+                            {
+                                if (dataDic.ContainsKey(i))
+                                {
+                                    while (dataDic[i] > 0)
+                                    {
+                                        resultSum += Math.Abs(i - index);
+                                        index++;
+                                        dataDic[i]--;
+                                    }
+                                }
+                            }
+                            scanner.streamWriter.WriteLine(resultSum);
+                }
+                scanner.streamWriter.Flush();
+            }
+            //Console.ReadKey();
+        }
+
+        public static int[] MergeSort(int[] data, int start, int end)
+        {
+            if (start == end)
+            {
+                return data.Skip(start).Take(1).ToArray();
+            }
+
+            if (start == end - 1)
+            {
+                if (data[start] > data[end])
+                {
+                    Swap(data, start, end);
+
+                }
+                return data.Skip(start).Take(2).ToArray();
+
+            }
+            var middle = start + (end - start) / 2;
+            var newData1 = MergeSort(data, start, middle);
+            var newData2 = MergeSort(data, middle + 1, end);
+
+            var result = Merge(newData1, newData2);
+            return result;
+        }
+
+        public static int[] Merge(int[] data1, int[] data2)
+        {
+            var result = new int[data1.Length + data2.Length];
+
+            var index1 = 0;
+            var index2 = 0;
+            var index = -1;
+            while (index1 < data1.Length && index2 < data2.Length)
+            {
+                var item1 = data1[index1];
+                var item2 = data2[index2];
+
+                var itemToPush = Math.Min(item1, item2);
+                result[++index] = itemToPush;
+                if (item1 < item2)
+                {
+                    index1++;
+                }
+                else
+                {
+                    index2++;
+                }
+            }
+
+            int indexToProceed = index1 < data1.Length ? index1 : index2;
+            var dataToProceed = index1 < data1.Length ? data1 : data2;
+
+            for (int j = indexToProceed; j < dataToProceed.Length; j++)
+            {
+                result[++index] = dataToProceed[j];
+            }
+
+            return result;
+        }
+
+        public static void Swap(int[] data, int i, int j)
+        {
+            var temp = data[i];
+            data[i] = data[j];
+            data[j] = temp;
+        }
+    }
+}
