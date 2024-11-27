@@ -1,0 +1,166 @@
+using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq;
+using Zeva;
+
+namespace DoctorKattis
+{
+   class Program
+    {
+        static void Main(string[] args)
+        {
+            using (var scanner = new ZevaScanner())
+            {
+                scanner.Initialize(2 ^ 25, 2 ^ 25);
+                var n = scanner.NextUInt();
+                var cats = new Dictionary<string, Cat>();
+                var catsInventory = new Dictionary<int, Cat>();
+                var minCat = Int32.MaxValue;
+                var maxCat = 0;
+                var buckets = Enumerable.Range(0, 17000).ToHashSet();
+                var existBuckets = Enumerable.Range(0, 17000).ToDictionary(i => i, i => 0);
+                for (int i = 0; i < n; i++)
+                {
+                    var command = scanner.NextUInt(true);
+                    string catName = string.Empty;
+                    int increaseLevel = 0;
+                    if (command < 3)
+                    {
+                        catName = scanner.NextString(65);
+                    }
+
+                    if (command < 2)
+                    {
+                        increaseLevel = scanner.NextUInt();
+                    }
+
+                    if (command == 0)
+                    {
+                        var newCat = new Cat { Name = catName, InfectionLevel = increaseLevel, ArrivalNumber = i };
+                        cats.Add(catName, newCat);
+                        //var newData = new Tuple<int, int, int>(buckets[increaseLevel].Item1 + 1, Math.Min(buckets[increaseLevel].Item2, i), Math.Max(buckets[increaseLevel].Item3, i));
+                        //buckets[increaseLevel] = newData;
+                        buckets.Remove(newCat.GetHashCode() / 10000);
+                        existBuckets[newCat.GetHashCode() / 10000]++;
+                        catsInventory.Add(newCat.GetHashCode(), newCat);
+                        minCat = Math.Min(minCat, newCat.GetHashCode());
+                        maxCat = Math.Max(maxCat, newCat.GetHashCode());
+                    }
+
+                    if (command == 1)
+                    {
+                        existBuckets[cats[catName].GetHashCode() / 10000]--;
+                        if (existBuckets[cats[catName].GetHashCode() / 10000] == 0)
+                        {
+                            buckets.Add(cats[catName].GetHashCode() / 10000);
+                        }
+                        catsInventory.Remove(cats[catName].GetHashCode());
+                        cats[catName].InfectionLevel += increaseLevel;
+                        catsInventory.Add(cats[catName].GetHashCode(), cats[catName]);
+                        buckets.Remove(cats[catName].GetHashCode() / 10000);
+                        existBuckets[cats[catName].GetHashCode() / 10000]++;
+                        minCat = Math.Min(minCat, cats[catName].GetHashCode());
+                    }
+
+                    if (command == 2)
+                    {
+                        existBuckets[cats[catName].GetHashCode() / 10000]--;
+                        if (existBuckets[cats[catName].GetHashCode() / 10000] == 0)
+                        {
+                            buckets.Add(cats[catName].GetHashCode() / 10000);
+                        }
+                        catsInventory.Remove(cats[catName].GetHashCode());
+                        cats.Remove(catName);
+                    }
+
+                    if (command == 3)
+                    {
+                        scanner.streamWriter.WriteLine(cats.Count == 0 ? "The clinic is empty" : FindTopCat(buckets, existBuckets, minCat, maxCat, catsInventory));
+                    }
+
+                }
+                scanner.streamWriter.Flush();
+            }
+         //Console.ReadKey();
+        }
+
+        private static string FindTopCat(HashSet<int> buckets, Dictionary<int, int> existBuckets, int min, int max, Dictionary<int, Cat> catsInventory)
+        {
+            bool found = false;
+            //if ((max - min) / catsInventory.Count > 10)
+            //{
+                var toSkip = buckets.Where(i => (i) * 10000 > min && ((i+1) * 10000 < max)).ToHashSet();
+                for (int i = min; i <= max; i = i + Math.Max(GetIndex(i / 10000, toSkip),1))
+                {
+                    if (catsInventory.ContainsKey(i))
+                    {
+                        min = i;
+                        return catsInventory[i].Name;
+                    }
+                }
+            //}
+            //else
+            //{
+
+            //}
+            return "The clinic is empty";
+        }
+
+        private static int GetIndex(int i, HashSet<int> buckets)
+        {
+            var result = 0;
+            var ii = i;
+            while (buckets.Contains(ii))
+            {
+                result += 10000;
+                ii++;
+            }
+            return result;
+        }
+
+        class Cat : IComparable<Cat>
+        {
+            public string Name { get; set; }
+            public int InfectionLevel { get; set; }
+
+            public int ArrivalNumber { get; set; }
+
+            public int CompareTo([AllowNull] Cat other)
+            {
+                if (other == null) return -1;
+                if (InfectionLevel.Equals(other.InfectionLevel))
+                {
+                    return ArrivalNumber.CompareTo(other.ArrivalNumber);
+                }
+                return InfectionLevel.CompareTo(other.InfectionLevel);
+            }
+
+            public override int GetHashCode()
+            {
+                return (170 - InfectionLevel) * 1000000 + ArrivalNumber;
+            }
+        }
+
+        //class MyHeap : ArrayList
+        //{
+        //    public Cat Pop()
+        //    {
+        //        var result = base[0];
+        //        base.RemoveAt(0);
+        //        return (Cat)result;
+        //    }
+
+        //    public void Push(Cat toPush)
+        //    {
+        //        var indexToInsert = FindWhereToInsert(toPush);
+        //        base.Insert(indexToInsert, toPush);
+        //    }
+
+        //    private int FindWhereToInsert(Cat toPush)
+        //    {
+        //        throw new NotImplementedException();
+        //    }
+        //}
+    }
+}
