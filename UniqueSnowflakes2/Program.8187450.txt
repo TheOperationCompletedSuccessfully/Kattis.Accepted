@@ -1,0 +1,76 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using Zagrade;
+
+namespace Snowflakes
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            using (var scanner = new ZScanner())
+            {
+                scanner.Initialize(700000, 256);
+                var caseNumber = scanner.NextUInt();
+                //var random = new Random(DateTime.Now.Millisecond);
+                for (int i = 0; i < caseNumber; i++)
+                {
+                    var snowflakesNumber = scanner.NextUInt(true);
+                    var indexes = new Hashtable(); //new int[1000001, 3];
+                    var indexLengthes = new Hashtable();//new int[1000001];
+                    var data = new int[snowflakesNumber];
+                    var package = new HashSet<int>();
+                    int oldLength = 0;
+                    int bestLength = 0;
+                    bool tooShort = false;
+                    var firstInTheRowIndex = 0;
+                    for (int j = 0; j < snowflakesNumber; j++)
+                    {
+                        var snowflake = scanner.NextUInt(true);
+                        if (!tooShort)
+                        {
+                            data[j] = snowflake;
+
+                            if (package.Count == 0)
+                            {
+                                firstInTheRowIndex = j;
+                            }
+                            if (!indexLengthes.ContainsKey(snowflake))
+                            {
+                                indexLengthes[snowflake] = 0;
+                            }
+                            var snowflakeKey = 10000000000 * (int)indexLengthes[snowflake] + snowflake;
+                            indexes[snowflakeKey] = j;
+                            indexLengthes[snowflake] = ((int)indexLengthes[snowflake]) + 1;
+                            package.Add(snowflake);
+                            if (oldLength == package.Count)
+                            {
+                                bestLength = Math.Max(oldLength, bestLength);
+
+
+                                for (int k = firstInTheRowIndex; k <= (int)indexes[snowflakeKey - 10000000000]; k++)
+                                {
+                                    package.Remove(data[k]);
+                                }
+                                firstInTheRowIndex = (int)indexes[snowflakeKey] + 1;
+                                indexes[snowflake] = indexes[snowflake + 10000000000];
+                                indexLengthes[snowflake] = 1;
+                                package.Add(snowflake);
+                                if (bestLength - package.Count >= snowflakesNumber - j)
+                                {
+                                    tooShort = true;
+                                }
+                            }
+                            oldLength = package.Count;
+                        }
+                    }
+                    bestLength = Math.Max(bestLength, oldLength);
+                    scanner.streamWriter.WriteLine(bestLength);
+                }
+                scanner.streamWriter.Flush();
+            }
+            //Console.ReadKey();
+        }
+    }
+}
