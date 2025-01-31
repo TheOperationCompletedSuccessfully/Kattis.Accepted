@@ -1,0 +1,80 @@
+package main
+
+import (
+    "fmt"
+    "os"
+//  "math/rand"
+    "bufio"
+    "strings"
+    "strconv"
+    )
+    
+func readUint(current int) int {
+data := make([]byte, 1)
+_, err := os.Stdin.Read(data)
+if err != nil {
+        panic(err)
+}
+
+if data[0] < 48 {
+if current < 0 {
+return readUint(current)
+}
+return current
+} else {
+if current < 0 {
+return readUint(int(data[0]) - 48)
+}
+return readUint(10*current + int(data[0])-48)
+}
+}
+
+func printResult(data []string, l int) int {
+
+fmt.Print(strings.Join(data[0:l], " "))
+return 0
+}
+
+
+    
+func main() {
+var n,c int
+fmt.Scanln(&n)
+//rand.Seed(int64(n))
+
+buf_reader := bufio.NewReaderSize(os.Stdin, 8*n)
+data := make([]string, n)
+sum := 0
+previous := 0
+
+for i:=0; i<n; i++ {
+//c = readUint(-1)
+fmt.Fscanf(buf_reader, "%d", &c)
+
+/*
+if i == n-1 {
+c = n
+} else {
+c = i//int(rand.Intn(n))
+}
+*/
+
+if sum == 0 || previous<c {
+data[sum] = strconv.Itoa(c)
+previous = c
+sum++
+}
+if c==n {
+fmt.Println(sum)
+printResult(data, sum)
+i = n
+}
+if c==n-1 {
+fmt.Println(sum+1)
+printResult(data, sum)
+fmt.Print(" ")
+fmt.Print(n)
+i = n
+}
+}
+}

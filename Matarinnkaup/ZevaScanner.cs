@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Buffers;
 using System.IO;
 using System.Text;
 
@@ -11,15 +10,12 @@ namespace Zeva
       public StreamReader streamReader = null;
       public StreamWriter streamWriter = null;
       readonly StringBuilder sb = new StringBuilder();
-      readonly ArrayPool<char> arrayPool = ArrayPool<char>.Shared;
-      readonly char[] chars;
 
-        public ZevaScanner(int bufferSize = 4096, int writeBufferSize = 4096)
+      public ZevaScanner(int bufferSize = 4096, int writeBufferSize = 4096)
       {
          streamReader = new StreamReader(new BufferedStream(Console.OpenStandardInput(), bufferSize));
          streamWriter = new StreamWriter(new BufferedStream(Console.OpenStandardOutput(), writeBufferSize));
          streamWriter.AutoFlush = false;
-         chars = arrayPool.Rent(10);
       }
 
       public int NextUInt()
@@ -169,19 +165,19 @@ namespace Zeva
 
       public string NextString(int firstAllowedChar)
       {
+         sb.Clear();
          int data = streamReader.Read();
          while (data < firstAllowedChar && data >= 0)
          {
             data = streamReader.Read();
          }
 
-         int index = -1;
          while (data >= firstAllowedChar)
          {
-            chars[++index] = (char)data;
+            sb.Append((char)data);
             data = streamReader.Read();
          }
-            return new string(chars, 0, index + 1);
+         return sb.ToString();
       }
 
       public string NextQuotedString()
@@ -219,8 +215,6 @@ namespace Zeva
          {
             streamWriter.Close();
          }
-
-         arrayPool.Return(chars);
-        }
+      }
    }
 }
